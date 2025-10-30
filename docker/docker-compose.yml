@@ -20,7 +20,7 @@ services:
     networks:
       - broker-net
     volumes:
-      - ./kafka-data:/var/lib/kafka/data
+      - kafka-data:/var/lib/kafka/data
 
   redis:
     image: redis:7.2-alpine
@@ -31,23 +31,61 @@ services:
     networks:
       - broker-net
     volumes:
-      - ./redis-data:/data
+      - redis-data:/data
 
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.0
     container_name: keycloak-broker-app
     environment:
+      DB_VENDOR: postgres
+      DB_ADDR: db_keycloak
+      DB_DATABASE: keycloak_db
+      DB_USER: keycloak
+      DB_PASSWORD: keycloak
       KEYCLOAK_ADMIN: Vovan
       KEYCLOAK_ADMIN_PASSWORD: 123321
       KC_HTTP_ENABLED: "true"
     ports:
       - "8080:8080"
-    command: start-dev
+    depends_on:
+      db_keycloak:
+        condition: service_healthy
+    command:
+      - start-dev
+      - --import-realm
     networks:
       - broker-net
     volumes:
-      - ./keycloak-data:/opt/keycloak/data
+      - keycloak-data:/opt/keycloak/data
+      - "C:/Users/Asus/IdeaProjects/stock-broker-app/docker/keycloak-data/export/broker-realm-realm.json:/opt/keycloak/data/import/broker-realm-realm.json"
+      - "C:/Users/Asus/IdeaProjects/stock-broker-app/docker/keycloak-data/export/broker-realm-users-0.json:/opt/keycloak/data/import/broker-realm-users-0.json"
+
+  db_keycloak:
+    image: postgres:13.5
+    container_name: postgres-keycloak
+    environment:
+      POSTGRES_DB: keycloak_db
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    ports:
+      - "5434:5432"
+    networks:
+      - broker-net
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U keycloak" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
 networks:
   broker-net:
     driver: bridge
+
+volumes:
+  kafka-data:
+  redis-data:
+  keycloak-data:
+  postgres-data:
