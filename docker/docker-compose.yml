@@ -9,7 +9,7 @@ services:
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-app:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       KAFKA_CLUSTER_ID: "Mk3C6-3LSoa5X7ALn4t03Q"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-broker-app:9093"
@@ -19,6 +19,8 @@ services:
       KAFKA_NUM_PARTITIONS: 1
     networks:
       - broker-net
+    volumes:
+      - ./kafka-data:/var/lib/kafka/data
 
   redis:
     image: redis:7.2-alpine
@@ -28,6 +30,8 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass redispass
     networks:
       - broker-net
+    volumes:
+      - ./redis-data:/data
 
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.0
@@ -41,6 +45,8 @@ services:
     command: start-dev
     networks:
       - broker-net
+    volumes:
+      - ./keycloak-data:/opt/keycloak/data
 
 networks:
   broker-net:

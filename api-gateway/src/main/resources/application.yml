@@ -4,8 +4,11 @@ server:
 spring:
   application:
     name: api-gateway
+
   cloud:
     gateway:
+      default-filters:
+        - TokenRelay
       routes:
         - id: client-service
           uri: http://localhost:8082
@@ -36,21 +39,23 @@ spring:
 
   security:
     oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/broker-realm
       client:
         registration:
           keycloak:
             client-id: api-gateway
-            client-secret: your-client-secret
-            scope: openid,profile,email
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+            client-secret: FTVmd9ElGig7lZMbpSDeX6XAMrvb3JEM
+            authorization-grant-type: client_credentials
+            scope: openid
         provider:
           keycloak:
-            issuer-uri: http://localhost:8080/realms/stock-broker-realm
+            issuer-uri: http://localhost:8080/realms/broker-realm
 
   data:
     redis:
-      host: localhost
+      host: redis-broker-app
       port: 6379
       password: redispass
 
