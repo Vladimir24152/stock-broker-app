@@ -59,6 +59,10 @@ spring:
       port: 6379
       password: redispass
 
+keycloak:
+  token-uri: http://localhost:8080/realms/broker-realm/protocol/openid-connect/token
+  grant-type: password
+
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG

@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -16,7 +17,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/all").hasRole("admin")
                         .anyRequest().authenticated()
                 )
@@ -31,7 +32,9 @@ public class SecurityConfig {
     }
 
     private Converter<Jwt, ? extends AbstractAuthenticationToken> keycloakAuthConverter() {
-        return null;
+        var converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(new AuthoritiesConverter());
+        return converter;
     }
 
 }
