@@ -4,38 +4,37 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.SecurityFilterChain;
 
-@EnableWebFluxSecurity
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
-                                                            Converter<Jwt, ? extends AbstractAuthenticationToken> keycloakConverter) {
-
+    SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                            Converter<Jwt, ? extends AbstractAuthenticationToken> keycloakConverter) throws Exception {
         http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(auth -> auth
-                        .pathMatchers("/actuator/**").permitAll()
-                        .pathMatchers("/auth/**").permitAll()
-                        .anyExchange().authenticated()
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .oauth2Login(Customizer.withDefaults())
+                .oauth2Login(login -> {})
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakConverter))
                 )
-                .oauth2Client(Customizer.withDefaults());
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
 
     @Bean
-    public Converter<Jwt, ? extends AbstractAuthenticationToken> keycloakAuthConverter() {
-        return new AuthoritiesConverter();
+    Converter<Jwt, ? extends AbstractAuthenticationToken> keycloakAuthConverter() {
+        return new AuthoritiesConverter(); // твой конвертер ролей из realm_access.roles -> ROLE_*
     }
 }
