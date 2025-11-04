@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   kafka:
     image: apache/kafka:3.7.0
@@ -33,6 +35,25 @@ services:
     volumes:
       - redis-data:/data
 
+  db_keycloak:
+    image: postgres:13.5
+    container_name: postgres-keycloak
+    environment:
+      POSTGRES_DB: keycloak_db
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    ports:
+      - "5434:5432"
+    networks:
+      - broker-net
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.0
     container_name: keycloak-broker-app
@@ -50,34 +71,33 @@ services:
     depends_on:
       db_keycloak:
         condition: service_healthy
-    command:
-      - start-dev
-      - --import-realm
+    command: ["start-dev", "--import-realm"]
     networks:
       - broker-net
     volumes:
       - keycloak-data:/opt/keycloak/data
-      - "C:/Users/Asus/IdeaProjects/stock-broker-app/docker/keycloak-data/export/broker-realm-realm.json:/opt/keycloak/data/import/broker-realm-realm.json"
-      - "C:/Users/Asus/IdeaProjects/stock-broker-app/docker/keycloak-data/export/broker-realm-users-0.json:/opt/keycloak/data/import/broker-realm-users-0.json"
-
-  db_keycloak:
-    image: postgres:13.5
-    container_name: postgres-keycloak
-    environment:
-      POSTGRES_DB: keycloak_db
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
-    ports:
-      - "5434:5432"
-    networks:
-      - broker-net
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - "./keycloak-data/export/broker-realm-realm.json:/opt/keycloak/data/import/broker-realm-realm.json"
+      - "./keycloak-data/export/broker-realm-users-0.json:/opt/keycloak/data/import/broker-realm-users-0.json"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U keycloak" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/realms/broker-realm || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 40
+
+  api-gateway:
+    build:
+      context: ../api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway-broker-app
+    ports:
+      - "8081:8081"
+    depends_on:
+      - keycloak
+      - redis
+      - kafka
+    restart: on-failure
+    networks:
+      - broker-net
 
 
 networks:
