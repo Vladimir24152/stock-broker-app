@@ -40,7 +40,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- Lombok dependency - будет наследоваться всеми модулями -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -52,7 +51,6 @@
     <build>
         <pluginManagement>
             <plugins>
-                <!-- Конфигурация компилятора для Lombok -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
