@@ -1,0 +1,3 @@
+com\stockbroker\gateway\ApiGatewayApplication.class
+com\stockbroker\gateway\config\AuthoritiesConverter.class
+com\stockbroker\gateway\config\SecurityConfig.class
