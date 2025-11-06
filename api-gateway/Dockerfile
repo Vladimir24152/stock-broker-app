@@ -6,4 +6,5 @@ COPY target/api-gateway-*.jar app.jar
 
 EXPOSE 8081
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"]
+

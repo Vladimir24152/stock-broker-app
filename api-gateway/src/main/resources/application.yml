@@ -22,23 +22,11 @@ spring:
           uri: http://localhost:8084
           predicates:
             - Path=/api/stocks/external/**
-
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/realms/broker-realm
-      client:
-        registration:
-          gateway-client:
-            provider: keycloak
-            client-id: api-gateway
-            client-secret: FTVmd9ElGig7lZMbpSDeX6XAMrvb3JEM
-            authorization-grant-type: client_credentials
-            scope: openid
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:8080/realms/broker-realm
 
 logging:
   level:
