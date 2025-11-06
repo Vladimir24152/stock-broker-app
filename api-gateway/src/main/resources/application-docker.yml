@@ -1,0 +1,38 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay
+      routes:
+        - id: client-service
+          uri: http://client-service:8080
+          predicates:
+            - Path=/api/clients/**, /api/stocks/**, /test/**
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak-broker-app:8080/realms/broker-realm
+      client:
+        registration:
+          gateway-client:
+            provider: keycloak
+            client-id: api-gateway
+            client-secret: FTVmd9ElGig7lZMbpSDeX6XAMrvb3JEM
+            authorization-grant-type: client_credentials
+            scope: openid
+        provider:
+          keycloak:
+            issuer-uri: http://keycloak-broker-app:8080/realms/broker-realm
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: INFO

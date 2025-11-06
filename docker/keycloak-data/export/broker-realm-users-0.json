@@ -1,0 +1,38 @@
+{
+  "realm" : "broker-realm",
+  "users" : [ {
+    "id" : "2b3a076d-8d01-4e3d-897b-4a31348f3d89",
+    "createdTimestamp" : 1761834132458,
+    "username" : "service-account-api-gateway",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "serviceAccountClientId" : "api-gateway",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-broker-realm" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "222fab3d-793b-43c4-a605-228321dc67d7",
+    "createdTimestamp" : 1761837598836,
+    "username" : "test-user",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "credentials" : [ {
+      "id" : "bb38201d-8a2c-49c2-9d4d-f573659ed3a4",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1761837621707,
+      "secretData" : "{\"value\":\"FlpHsTDbrTMozLP0TBM4+Qu9PMhYMwaPN/ENRSnBoj0=\",\"salt\":\"ZkB7h/LXva8oaiJ9EsI3ng==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "user", "default-roles-broker-realm" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
