@@ -14,26 +14,31 @@
     <name>API Gateway</name>
 
     <dependencies>
+        <!-- ✅ Spring Cloud Gateway MVC (Servlet-стек) -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway-mvc</artifactId>
         </dependency>
 
+        <!-- ✅ Обычный Spring MVC (servlet) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- ✅ Resource Server (JWT от Keycloak) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
         </dependency>
 
+        <!-- ✅ OAuth2 Client (нужен для TokenRelay) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-client</artifactId>
         </dependency>
 
+        <!-- Redis rate-limiter можно пока не ставить; добавим позже при необходимости -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -42,6 +47,7 @@
 
     <build>
         <plugins>
+            <!-- ✅ Делает правильный fat-jar с Main-Class -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

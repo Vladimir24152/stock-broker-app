@@ -32,6 +32,6 @@ public class SecurityConfig {
 
     @Bean
     Converter<Jwt, ? extends AbstractAuthenticationToken> keycloakAuthConverter() {
-        return new AuthoritiesConverter();
+        return new AuthoritiesConverter(); // твой конвертер ролей из realm_access.roles -> ROLE_*
     }
 }
