@@ -99,6 +99,42 @@ services:
     networks:
       - broker-net
 
+  db_client_service:
+    image: postgres:13.5
+    container_name: postgres-client-service
+    environment:
+      POSTGRES_DB: client_db
+      POSTGRES_USER: client
+      POSTGRES_PASSWORD: client
+    ports:
+      - "5435:5432"
+    networks:
+      - broker-net
+    volumes:
+      - postgres-client-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U client" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  client-service:
+    build:
+      context: ../client-service
+      dockerfile: Dockerfile
+    container_name: client-service-app
+    depends_on:
+      db_client_service:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8085:8080"
+    networks:
+      - broker-net
+
 
 networks:
   broker-net:
@@ -109,3 +145,4 @@ volumes:
   redis-data:
   keycloak-data:
   postgres-data:
+  postgres-client-data:
